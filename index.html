@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="af">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Ooskus Wiskunde Buddy</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#1a3a5c;--nl:#2a5280;
+  --teal:#1a8a7a;--tl:#2db8a4;--tp:#e8f7f5;
+  --gold:#b8860b;--gm:#c9a84c;--gl:#f5e9c4;
+  --white:#fff;--off:#f8f9fa;
+  --g1:#f1f3f5;--g2:#e9ecef;--g3:#dee2e6;
+  --tx:#1a1a2e;--txm:#3d4a5c;--txs:#6c757d;
+  --red:#c0392b;
+  --ss:0 1px 3px rgba(0,0,0,.08);
+  --r:12px;--rs:8px;--rl:18px;
+}
+html,body{height:100%;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--off);color:var(--tx);
+  display:flex;flex-direction:column;height:100vh;max-width:900px;margin:0 auto;}
+
+/* NAME SCREEN */
+#nameScreen{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  flex:1;padding:20px 22px;text-align:center;gap:14px;background:var(--white);}
+.ns-logo{width:160px;height:auto;object-fit:contain;border-radius:12px;}
+.ns-card{background:var(--off);border:2px solid var(--tl);border-radius:var(--r);
+  padding:20px 24px;max-width:370px;width:100%;display:flex;flex-direction:column;gap:10px;}
+.ns-card label{font-size:13px;font-weight:800;color:var(--navy);}
+.ns-inp{width:100%;background:var(--white);border:1.5px solid var(--g3);border-radius:var(--rs);
+  padding:11px 14px;font-size:15px;font-family:'Nunito',sans-serif;font-weight:700;outline:none;text-align:center;}
+.ns-inp:focus{border-color:var(--teal);}
+.ns-row{display:flex;align-items:center;justify-content:center;gap:10px;}
+.ns-row label{font-size:13px;font-weight:800;color:var(--navy);}
+.ns-gsel{background:var(--navy);color:#fff;border:none;border-radius:var(--rs);
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;padding:8px 12px;cursor:pointer;outline:none;}
+.ns-btn{width:100%;background:var(--navy);color:var(--gm);border:none;border-radius:var(--rs);
+  padding:13px;font-family:'Nunito',sans-serif;font-weight:900;font-size:15px;cursor:pointer;transition:all .2s;}
+.ns-btn:hover{background:var(--nl);}
+.ns-err{font-size:12px;color:var(--red);display:none;text-align:center;}
+
+/* APP SHELL */
+#appScreen{display:none;flex-direction:column;flex:1;overflow:hidden;}
+.hdr{background:var(--white);border-bottom:3px solid var(--teal);padding:8px 14px;
+  display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:var(--ss);}
+.hdr-logo{width:44px;height:44px;border-radius:8px;object-fit:contain;flex-shrink:0;background:var(--white);}
+.hdr-txt{flex:1;min-width:0;}
+.hdr-txt h1{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--navy);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hdr-txt p{font-size:10px;color:var(--txs);margin-top:1px;}
+.hdr-r{display:flex;gap:5px;flex-shrink:0;align-items:center;}
+.badge{border-radius:var(--rs);font-family:'Nunito',sans-serif;font-weight:800;font-size:11px;padding:4px 9px;white-space:nowrap;}
+.bn{background:var(--tp);border:1px solid var(--tl);color:var(--teal);}
+.bg{background:var(--navy);color:var(--gm);}
+
+/* NAV TABS */
+.nav-tabs{display:flex;background:var(--white);border-bottom:2px solid var(--g2);flex-shrink:0;}
+.nav-tab{flex:1;padding:9px 4px;border:none;background:none;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;color:var(--txs);
+  border-bottom:3px solid transparent;margin-bottom:-2px;
+  display:flex;align-items:center;justify-content:center;gap:3px;transition:all .2s;}
+.nav-tab:hover{background:var(--g1);color:var(--tx);}
+.nav-tab.active{color:var(--teal);border-bottom-color:var(--teal);}
+
+/* TUTOR PAGE */
+#tutorPage{display:flex;flex-direction:column;flex:1;overflow:hidden;}
+.mode-bar{display:flex;background:var(--white);border-bottom:1px solid var(--g2);flex-shrink:0;}
+.mode-btn{flex:1;padding:8px 4px;border:none;background:none;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;color:var(--txs);
+  border-bottom:3px solid transparent;margin-bottom:-1px;
+  display:flex;align-items:center;justify-content:center;gap:3px;transition:all .18s;}
+.mode-btn:hover{background:var(--g1);}
+.mt.on{color:var(--teal);border-bottom-color:var(--teal);}
+.mk.on{color:var(--gold);border-bottom-color:var(--gold);}
+.mu.on{color:var(--red);border-bottom-color:var(--red);}
+
+/* TOPIC BAR */
+.topic-bar{display:flex;gap:5px;padding:7px 12px;overflow-x:auto;scrollbar-width:none;
+  background:var(--g1);border-bottom:1px solid var(--g2);flex-shrink:0;align-items:center;}
+.topic-bar::-webkit-scrollbar{display:none;}
+.tchip{background:var(--white);border:1.5px solid var(--tl);border-radius:20px;
+  padding:3px 11px;font-size:11px;color:var(--teal);cursor:pointer;font-family:'Nunito',sans-serif;
+  font-weight:700;white-space:nowrap;transition:all .16s;}
+.tchip:hover{background:var(--teal);color:#fff;}
+
+/* CHAT */
+.chat{flex:1;overflow-y:auto;padding:13px 12px;display:flex;flex-direction:column;gap:11px;background:var(--off);}
+.chat::-webkit-scrollbar{width:4px;}
+.chat::-webkit-scrollbar-thumb{background:var(--g3);border-radius:4px;}
+.msg{display:flex;gap:7px;animation:fu .2s ease;}
+@keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{flex-direction:row-reverse;}
+.av{width:31px;height:31px;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;font-size:14px;flex-shrink:0;align-self:flex-end;}
+.av.bot{background:var(--navy);}
+.av.usr{background:var(--teal);}
+.bbl{max-width:82%;padding:10px 13px;border-radius:var(--rl);font-size:13px;line-height:1.65;}
+.msg.bot .bbl{background:var(--white);color:var(--tx);border:1px solid var(--g2);border-bottom-left-radius:3px;}
+.msg.user .bbl{background:var(--navy);color:#fff;border-bottom-right-radius:3px;}
+.bbl strong{color:var(--navy);}
+.msg.user .bbl strong{color:var(--gl);}
+.bbl .hl{background:var(--tp);border:1px solid var(--tl);border-radius:4px;
+  padding:0 6px;color:var(--teal);font-weight:700;font-family:monospace;font-size:12px;}
+.spk-btn{background:none;border:1px solid var(--g2);cursor:pointer;color:var(--txs);
+  padding:3px 8px;border-radius:5px;margin-top:6px;display:inline-flex;align-items:center;gap:3px;
+  font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;transition:all .15s;}
+.spk-btn:hover,.spk-btn.on{background:var(--tp);color:var(--teal);border-color:var(--tl);}
+.dots{display:flex;gap:4px;align-items:center;}
+.dots span{width:6px;height:6px;background:var(--tl);border-radius:50%;animation:dt 1.1s infinite;}
+.dots span:nth-child(2){animation-delay:.18s;}
+.dots span:nth-child(3){animation-delay:.36s;}
+@keyframes dt{0%,80%,100%{transform:scale(.5);opacity:.4}40%{transform:scale(1);opacity:1}}
+
+/* SCORE BAR */
+.score-bar{display:flex;align-items:center;gap:7px;padding:5px 12px;background:var(--white);
+  border-top:1px solid var(--g2);flex-shrink:0;}
+.sc-lbl{font-size:10px;color:var(--txs);font-weight:700;}
+.xp-w{flex:1;height:6px;background:var(--g2);border-radius:4px;overflow:hidden;}
+.xp-f{height:100%;background:linear-gradient(90deg,var(--teal),var(--gm));border-radius:4px;transition:width .5s;}
+.lvl{font-size:11px;font-weight:800;color:var(--navy);}
+.stk{font-size:10px;color:var(--red);font-weight:800;}
+.vs{text-align:center;font-size:11px;padding:3px;background:var(--tp);color:var(--teal);
+  flex-shrink:0;display:none;font-weight:700;}
+.vs.on{display:block;}
+.retry-note{font-size:11px;color:var(--txs);text-align:center;padding:3px;background:var(--white);
+  flex-shrink:0;display:none;}
+.retry-note.on{display:block;}
+
+/* QUICK PROMPTS */
+.qp-area{padding:5px 12px 2px;display:flex;flex-wrap:wrap;gap:4px;flex-shrink:0;background:var(--white);}
+.qp{background:var(--g1);border:1.5px solid var(--g3);border-radius:14px;padding:3px 10px;
+  font-size:11px;color:var(--txm);cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;
+  white-space:nowrap;transition:all .16s;}
+.qp:hover{border-color:var(--navy);color:var(--navy);background:var(--gl);}
+
+/* SYMBOL BAR */
+.sym-bar{display:flex;gap:4px;padding:5px 12px;overflow-x:auto;scrollbar-width:none;
+  background:var(--g1);border-top:1px solid var(--g2);flex-shrink:0;align-items:center;}
+.sym-bar::-webkit-scrollbar{display:none;}
+.sym-lbl{font-size:10px;color:var(--txs);font-weight:700;white-space:nowrap;margin-right:2px;}
+.sym-btn{background:var(--white);border:1.5px solid var(--g3);border-radius:6px;
+  padding:3px 8px;font-size:13px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;
+  color:var(--navy);transition:all .15s;white-space:nowrap;min-width:32px;text-align:center;}
+.sym-btn:hover{background:var(--navy);color:var(--gm);border-color:var(--navy);}
+
+/* INPUT */
+.inp-area{padding:6px 12px 8px;display:flex;gap:7px;align-items:flex-end;background:var(--white);
+  border-top:2px solid var(--g2);flex-shrink:0;}
+.inp-col{flex:1;display:flex;flex-direction:column;gap:3px;}
+.inp-w{background:var(--g1);border:1.5px solid var(--g3);border-radius:var(--r);
+  display:flex;align-items:flex-end;padding:8px 11px;gap:5px;transition:border-color .2s;}
+.inp-w:focus-within{border-color:var(--teal);background:var(--white);}
+#ui{flex:1;background:none;border:none;outline:none;color:var(--tx);font-size:13px;
+  font-family:'Nunito',sans-serif;resize:none;max-height:100px;line-height:1.5;}
+#ui::placeholder{color:var(--txs);}
+.spell-bar{min-height:18px;display:flex;flex-wrap:wrap;gap:3px;padding:0 2px;}
+.sp-err{color:var(--red);font-size:10px;font-weight:700;background:rgba(192,57,43,.08);
+  border:1px solid rgba(192,57,43,.2);border-radius:4px;padding:1px 6px;}
+.sp-sug{background:var(--gl);border:1px solid var(--gm);border-radius:4px;
+  padding:1px 7px;font-size:10px;color:var(--gold);cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;}
+.sp-sug:hover{background:var(--gm);color:#fff;}
+.vbtn{background:none;border:none;cursor:pointer;font-size:17px;padding:1px;color:var(--txs);
+  flex-shrink:0;display:flex;align-items:center;transition:color .2s;}
+.vbtn:hover{color:var(--teal);}
+.vbtn.rec{color:var(--red);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.send{width:38px;height:38px;background:var(--navy);border:none;border-radius:var(--rs);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--gm);
+  font-size:15px;transition:all .15s;}
+.send:hover{background:var(--nl);transform:scale(1.04);}
+.send:active{transform:scale(.95);}
+.send:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+
+/* HULP */
+#hulpPage{display:none;flex:1;overflow-y:auto;padding:14px 12px;background:var(--off);flex-direction:column;gap:12px;}
+.hulp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;}
+.hcard{background:var(--white);border:1px solid var(--g2);border-radius:var(--r);padding:14px;}
+.hcard h3{font-size:13px;font-weight:900;color:var(--navy);margin-bottom:9px;
+  display:flex;align-items:center;gap:5px;border-bottom:2px solid var(--tp);padding-bottom:7px;}
+.hcard ul{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.hcard li{font-size:12px;color:var(--txm);padding:4px 8px;background:var(--off);
+  border-radius:5px;border-left:3px solid var(--tl);}
+.hcard li .lb{font-weight:800;color:var(--navy);display:block;margin-bottom:1px;}
+.hcard li .fm{font-family:monospace;background:var(--tp);color:var(--teal);
+  border-radius:3px;padding:0 5px;font-size:11px;font-weight:700;}
+.htip{background:var(--gl);border:1px solid var(--gm);border-radius:var(--r);padding:12px 14px;}
+.htip h3{font-size:12px;font-weight:900;color:var(--gold);margin-bottom:5px;}
+.htip p{font-size:12px;color:var(--txm);line-height:1.6;}
+
+/* VRAESTEL */
+#vraestelPage{display:none;flex:1;overflow-y:auto;padding:14px 12px;background:var(--off);flex-direction:column;gap:12px;}
+.vcard{background:var(--white);border:1px solid var(--g2);border-radius:var(--r);padding:16px;}
+.vcard h3{font-size:14px;font-weight:900;color:var(--navy);margin-bottom:12px;}
+.vr-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center;}
+.vr-row label{font-size:12px;font-weight:800;color:var(--txm);white-space:nowrap;}
+.vsel{background:var(--white);border:1.5px solid var(--g3);border-radius:var(--rs);
+  font-family:'Nunito',sans-serif;font-weight:700;font-size:12px;padding:6px 10px;cursor:pointer;outline:none;color:var(--tx);}
+.vsel:focus{border-color:var(--teal);}
+.vchk-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.vchk{display:flex;align-items:center;gap:4px;background:var(--g1);
+  border:1.5px solid var(--g3);border-radius:8px;padding:5px 10px;cursor:pointer;}
+.vchk:hover{border-color:var(--teal);}
+.vchk input{accent-color:var(--teal);cursor:pointer;}
+.vchk label{font-size:12px;font-weight:700;color:var(--txm);cursor:pointer;}
+.vgen-btn{background:var(--navy);color:var(--gm);border:none;border-radius:var(--rs);
+  padding:11px 24px;font-family:'Nunito',sans-serif;font-weight:900;font-size:13px;cursor:pointer;transition:all .2s;}
+.vgen-btn:hover{background:var(--nl);}
+.vgen-btn:disabled{opacity:.4;cursor:not-allowed;}
+.vgen-btn.memo{background:var(--teal);}
+.vout{background:var(--off);border:1px solid var(--g2);border-radius:var(--r);
+  padding:16px;font-size:13px;line-height:1.8;color:var(--tx);white-space:pre-wrap;display:none;margin-top:10px;}
+.vout.vis{display:block;}
+.vacts{display:none;gap:8px;margin-top:10px;}
+.vacts.vis{display:flex;}
+.vact{flex:1;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);
+  padding:9px;font-family:'Nunito',sans-serif;font-weight:800;font-size:12px;cursor:pointer;}
+.vact:hover{opacity:.85;}
+.vact.sec{background:var(--navy);}
+.vspin{display:none;text-align:center;padding:16px;color:var(--txs);font-size:13px;}
+.vspin.on{display:block;}
+</style>
+</head>
+<body>
+
+<!-- NAME SCREEN -->
+<div id="nameScreen">
+  <img class="ns-logo" id="ns-logo" alt="Ooskus Wiskunde Buddy Logo">
+  <div class="ns-card">
+    <label for="nameInp">Wat is jou naam?</label>
+    <input class="ns-inp" type="text" id="nameInp" placeholder="Tik jou naam hier..." maxlength="30" autocomplete="off">
+    <div class="ns-row">
+      <label for="nsGrade">Ek is in</label>
+      <select class="ns-gsel" id="nsGrade"></select>
+    </div>
+    <button class="ns-btn" id="startBtn">Kom ons begin! &#128170;</button>
+    <div class="ns-err" id="nsErr">Tik asseblief jou naam in!</div>
+  </div>
+</div>
+
+<!-- APP SCREEN -->
+<div id="appScreen">
+  <div class="hdr">
+    <img class="hdr-logo" id="hdr-logo" alt="Ooskus Logo">
+    <div class="hdr-txt">
+      <h1>Ooskus Wiskunde Buddy</h1>
+      <p id="hdrSub">Wiskunde-tutor</p>
+    </div>
+    <div class="hdr-r">
+      <div class="badge bn" id="nameBadge"></div>
+      <div class="badge bg" id="gradeBadge"></div>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="tab-tutor">&#127891; Tutor</button>
+    <button class="nav-tab" id="tab-hulp">&#128218; Hulpbronne</button>
+    <button class="nav-tab" id="tab-vr">&#128196; Vraestel</button>
+  </div>
+
+  <!-- TUTOR PAGE -->
+  <div id="tutorPage">
+    <div class="mode-bar">
+      <button class="mode-btn mt on" id="btn-tutor">&#128216; Tutor</button>
+      <button class="mode-btn mk" id="btn-toets">&#128221; Toets</button>
+      <button class="mode-btn mu" id="btn-uit">&#128293; Uitdaging</button>
+    </div>
+    <div class="topic-bar" id="topicBar"></div>
+    <div class="chat" id="chat"></div>
+    <div class="score-bar">
+      <span class="sc-lbl">Vordering:</span>
+      <div class="xp-w"><div class="xp-f" id="xpBar" style="width:0%"></div></div>
+      <span class="lvl" id="lvlTxt">Vlak 1</span>
+      <span class="stk" id="stkTxt"></span>
+    </div>
+    <div class="vs" id="vStatus">&#127908; Luister... praat nou!</div>
+    <div class="retry-note" id="retryNote"></div>
+    <div class="qp-area" id="qpArea"></div>
+    <div class="sym-bar" id="symBar"><span class="sym-lbl">Simbole:</span></div>
+    <div class="inp-area">
+      <div class="inp-col">
+        <div class="inp-w">
+          <textarea id="ui" rows="1" placeholder="Skryf jou vraag of antwoord hier..."></textarea>
+          <button class="vbtn" id="vBtn">&#127908;</button>
+        </div>
+        <div class="spell-bar" id="spellBar"></div>
+      </div>
+      <button class="send" id="sendBtn">&#9658;</button>
+    </div>
+  </div>
+
+  <!-- HULPBRONNE PAGE -->
+  <div id="hulpPage">
+    <div class="htip">
+      <h3>&#128161; Hoe om hierdie app te gebruik</h3>
+      <p><strong>Tutor</strong> = stap-vir-stap hulp &nbsp;|&nbsp; <strong>Toets</strong> = oefening met punte &nbsp;|&nbsp; <strong>Uitdaging</strong> = moeiliker vrae. Gebruik ook die <strong>Vraestel</strong>-oortjie!</p>
+    </div>
+    <div style="font-size:12px;font-weight:900;color:var(--txs);letter-spacing:.5px;text-transform:uppercase;padding:2px;">Formules en Wenke</div>
+    <div class="hulp-grid" id="hulpGrid"></div>
+  </div>
+
+  <!-- VRAESTEL PAGE -->
+  <div id="vraestelPage">
+    <div class="vcard">
+      <h3>&#128196; Genereer Oefentoets of Vraestel</h3>
+      <div class="vr-row">
+        <label>Graad:</label>
+        <select class="vsel" id="vrGrade"></select>
+        <label>Tipe:</label>
+        <select class="vsel" id="vrTipe">
+          <option value="oefening">Oefentoets (10 vrae)</option>
+          <option value="kort">Kort Toets (15 vrae)</option>
+          <option value="formeel">Formele Toets (20 vrae)</option>
+          <option value="vraestel">Vraestel (30 vrae)</option>
+        </select>
+        <label>Moeilikheid:</label>
+        <select class="vsel" id="vrMoeil">
+          <option value="maklik">Maklik</option>
+          <option value="gemiddeld" selected>Gemiddeld</option>
+          <option value="moeilik">Moeilik</option>
+          <option value="gemeng">Gemeng</option>
+        </select>
+      </div>
+      <div style="font-size:12px;font-weight:800;color:var(--txm);margin-bottom:6px;">Kies onderwerpe:</div>
+      <div class="vchk-grid" id="vrTopics"></div>
+      <div class="vr-row">
+        <button class="vgen-btn" id="vrGenBtn">&#9889; Genereer</button>
+        <button class="vgen-btn memo" id="vrMemoBtn" style="display:none">&#128203; Memo</button>
+      </div>
+      <div class="vspin" id="vrSpinner">&#9203; Genereer vraestel...</div>
+      <div class="vout" id="vrOutput"></div>
+      <div class="vacts" id="vrActions">
+        <button class="vact" id="vrCopyBtn">&#128203; Kopieer</button>
+        <button class="vact sec" id="vrMemoBtn2">&#128221; Memorandum</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var GKEY="AIzaSyAcm7dwGoIvOyN9VLtW1mhPX1trw3qxmO4";
+var LOGO="data:image/jpeg;base64,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";
+var AF_WORDS=new Set(["aan", "afdeling", "afgeleide", "aftrekking", "algebra", "algebraies", "almal", "analities", "antwoord", "antwoorde", "as", "beantwoord", "bepaal", "bereik", "bereken", "berekening", "bewerking", "bewerkings", "bewys", "binne", "binomiaal", "bladsy", "bo", "breuk", "breuke", "buite", "cos", "daai", "dan", "dat", "data", "deling", "derde", "desimaal", "desimale", "diagram", "die", "dit", "domein", "driehoek", "druip", "eenhede", "eenheid", "eenvoudig", "eerste", "ek", "eksamen", "eksamens", "eksponensiaal", "eksponent", "eksponente", "en", "evalueer", "faktorisasie", "finansieel", "formule", "formules", "funksie", "funksies", "gedeel", "gelykstaanteken", "gemiddelde", "graad", "grade", "grafiek", "grafieke", "grafies", "gram", "groter", "hakie", "hakies", "helling", "het", "hierbo", "hierdie", "hiperbool", "hoe", "hoek", "hoeke", "hoeveel", "hoofstuk", "huiswerk", "hulle", "hy", "in", "integrasie", "interval", "is", "jaar", "jou", "jy", "kan", "kans", "keer", "kilogram", "kilometer", "klas", "kleiner", "koeffisient", "komma", "kon", "konstante", "konstrueer", "koordinaat", "koordinate", "korrek", "kwadraat", "kwadrate", "kwadratiese", "laaste", "leer", "leerder", "leerders", "lees", "limiet", "lineere", "links", "liter", "maand", "maar", "mag", "mediaan", "meetkunde", "met", "meter", "meting", "metode", "metodes", "milliliter", "millimeter", "minus", "minuut", "modus", "moes", "moet", "moontlik", "my", "negatief", "nie", "niemand", "nulpunt", "numeries", "oefen", "oefening", "of", "omtrek", "onder", "onderwyser", "ongelykheid", "onmoontlik", "ons", "ook", "op", "opdrag", "oplos", "oplossing", "oppervlakte", "optelling", "parabool", "perimeter", "persentasie", "plus", "polinoom", "positief", "prisma", "probeer", "produk", "projek", "punt", "punte", "pythagoras", "reeks", "reghoek", "regs", "rente", "rye", "sal", "sekonde", "sentimeter", "silinder", "sin", "sirkel", "skool", "skryf", "slaag", "snypunt", "so", "som", "sou", "stap", "stappe", "statistiek", "substitusie", "sy", "tabel", "tan", "teken", "term", "terme", "toets", "toon", "trigonometrie", "trinomiaal", "tussen", "tweede", "uitdrukking", "uitdrukkings", "uitkomste", "uur", "van", "veranderlike", "verduidelik", "vereenvoudig", "vergelyking", "vergelykings", "verhouding", "verhoudings", "verkeerd", "verlies", "vermenigvuldiging", "verskil", "verstaan", "vierkant", "vind", "vir", "volgende", "volume", "voorbeeld", "voorbeelde", "vorige", "vraag", "vrae", "vraestel", "waar", "waarom", "waarskynlikheid", "wanneer", "was", "wat", "watter", "week", "wie", "wil", "wins", "wiskunde", "word", "wortel", "wortels", "wou"]);
+var WIZE_TOPICS={"7": ["Heelgetalle", "Uitdrukkings", "Vereenvoudiging", "Vergelykings", "Grafieke", "Meetkunde", "Oppervlakte", "Kans"], "8": ["Eksponente", "Faktorisasie", "Algebra", "Pythagoras", "Prismas", "Silinders", "Transformasies", "Statistiek"], "9": ["Eksponente", "Faktorisasie", "Lineere Vergelykings", "Funksies", "Grafieke", "Meetkunde", "Volume", "Kans", "Statistiek"], "10": ["Algebra", "Parabole", "Hiperbole", "Eksponensiaal", "Finansies", "Statistiek", "Trigonometrie", "Meetkunde"], "11": ["Funksies", "Trigonometrie", "Meetkunde Bewyse", "Finansies", "Statistiek", "Algebra"], "12": ["Rye en Reekse", "Kalkulus", "Trigonometrie", "Finansies", "Statistiek", "Meetkunde"]};
+
+document.getElementById("ns-logo").src=LOGO;
+document.getElementById("hdr-logo").src=LOGO;
+
+var nsG=document.getElementById("nsGrade");
+var vrG=document.getElementById("vrGrade");
+for(var i=1;i<=12;i++){
+  var o1=document.createElement("option");o1.value=i;o1.text="Graad "+i;if(i===9)o1.selected=true;nsG.appendChild(o1);
+  var o2=document.createElement("option");o2.value=i;o2.text="Graad "+i;if(i===9)o2.selected=true;vrG.appendChild(o2);
+}
+
+/* ── SYMBOL BAR ── */
+var SYMS=[
+  {s:"x\u00b2",v:"x\u00b2"},{s:"x\u00b3",v:"x\u00b3"},{s:"\u221a",v:"\u221a"},
+  {s:"\u03c0",v:"\u03c0"},{s:"\u00f7",v:"\u00f7"},{s:"\u00d7",v:"\u00d7"},
+  {s:"\u2260",v:"\u2260"},{s:"\u2264",v:"\u2264"},{s:"\u2265",v:"\u2265"},
+  {s:"\u00b1",v:"\u00b1"},{s:"\u2192",v:"\u2192"},{s:"\u221e",v:"\u221e"},
+  {s:"\u03b8",v:"\u03b8"},{s:"\u2220",v:"\u2220"},{s:"\u00b0",v:"\u00b0"},
+  {s:"\u03a3",v:"\u03a3"},{s:"f(x)",v:"f(x)"},{s:"y=mx+c",v:"y=mx+c"},
+  {s:"a\u00b2+b\u00b2=c\u00b2",v:"a\u00b2+b\u00b2=c\u00b2"}
+];
+var symBar=document.getElementById("symBar");
+SYMS.forEach(function(sym){
+  var b=document.createElement("button");b.className="sym-btn";b.textContent=sym.s;b.title=sym.s;
+  b.addEventListener("click",function(){
+    var el=document.getElementById("ui");
+    var st=el.selectionStart,en=el.selectionEnd;
+    el.value=el.value.substring(0,st)+sym.v+el.value.substring(en);
+    el.selectionStart=el.selectionEnd=st+sym.v.length;
+    el.focus();spellCheck();
+  });
+  symBar.appendChild(b);
+});
+
+/* ── SPELL CHECK ── */
+function spellCheck(){
+  var bar=document.getElementById("spellBar");bar.innerHTML="";
+  var txt=document.getElementById("ui").value;
+  if(!txt.trim())return;
+  var seen={};
+  txt.split(/\s+/).forEach(function(w){
+    var c=w.toLowerCase().replace(/[^a-z\u00e0-\u017f]/g,"");
+    if(c.length>2&&!AF_WORDS.has(c)&&!seen[c]){
+      seen[c]=true;
+      var lbl=document.createElement("span");lbl.className="sp-err";lbl.textContent="\u2753 "+c;
+      bar.appendChild(lbl);
+      var pre=c.substring(0,2);var sugs=[];
+      AF_WORDS.forEach(function(aw){if(aw.startsWith(pre)&&Math.abs(aw.length-c.length)<=3&&aw!==c)sugs.push(aw);});
+      sugs.slice(0,2).forEach(function(sg){
+        var sbtn=document.createElement("button");sbtn.className="sp-sug";sbtn.textContent=sg;
+        sbtn.addEventListener("click",function(){
+          var el=document.getElementById("ui");
+          el.value=el.value.replace(new RegExp("\\b"+c+"\\b","i"),sg);
+          spellCheck();
+        });
+        bar.appendChild(sbtn);
+      });
+    }
+  });
+}
+
+/* ── DATA ── */
+var TOPICS={
+  1:["Getalle 1-100","Tel en Aftrek","Vorms","Tyd","Lengte"],
+  2:["Getalle tot 200","Optelling","Aftrekking","Vermenigvuldiging","Geld","Tyd"],
+  3:["Getalle tot 1000","Vier Bewerkings","Breuke","Meting","Meetkunde"],
+  4:["Getalle en Bewerkings","Breuke","Desimale","Perimeter en Oppervlakte","Data"],
+  5:["Getalle en Bewerkings","Breuke en Desimale","Persente","Verhoudings","Grafieke"],
+  6:["Breuke Desimale %","Verhoudings","Algebra Inleiding","Oppervlakte en Volume","Data"],
+  7:["Heelgetalle","Algebraiese Uitdrukkings","Meetkunde en Hoeke","Grafieke","Kans"],
+  8:["Eksponente","Algebra en Vergelykings","Pythagoras","Oppervlakarea en Volume","Meetkunde"],
+  9:["Eksponente en Wortels","Algebra en Faktorisasie","Funksies en Grafieke","Meetkunde","Data en Kans"],
+  10:["Algebra en Funksies","Parabole en Hiperbole","Driehoeksmeting","Finansiele Wiskunde","Statistiek"],
+  11:["Funksies en Transformasies","Trigonometrie","Euklidiese Meetkunde","Finansies","Statistiek"],
+  12:["Rye en Reekse","Kalkulus","Driehoeksmeting","Meetkunde Bewys","Finansies"]
+};
+var QPS={
+  tutor:["Verduidelik vir my","Stap vir stap asb","Gee n voorbeeld","Ek verstaan nie"],
+  toets:["Gee my 5 vrae","Toets my kennis","Eenvoudige vrae","Moeiliker vrae"],
+  uitdaging:["Gee uitdaging!","Olimpiese vraag","Kombineer konsepte","Hardste vraag"]
+};
+var GI={
+  1:{f:"Grondslagfase",t:"baie eenvoudig en speels, gebruik storietjies en konkrete voorbeelde",k:"tel 1-100, optelling/aftrekking tot 20, 2D vorms, tyd"},
+  2:{f:"Grondslagfase",t:"eenvoudig en warm",k:"getalle tot 200, vier bewerkings, vermenigvuldiging 2s 5s 10s, rand en sent"},
+  3:{f:"Grondslagfase",t:"helder en vriendelik",k:"getalle tot 1000, vier bewerkings, breuke helfte/kwart, meting"},
+  4:{f:"Intermediere fase",t:"duidelik en stapsgewys",k:"getalle tot 10000, gemene breuke, desimale, perimeter/oppervlakte"},
+  5:{f:"Intermediere fase",t:"toeganklik en helder",k:"getalle tot 1000000, breuke/desimale/persente, verhoudings, data"},
+  6:{f:"Intermediere fase",t:"duidelik, begin algebraiese denke",k:"breuke/desimale/persente, verhoudings, veranderlike inleiding"},
+  7:{f:"Senior fase",t:"presies maar toeganklik",k:"heelgetalle, algebraiese uitdrukkings, meetkunde hoeke/driehoeke, grafieke, kans"},
+  8:{f:"Senior fase",t:"algebraies en analities",k:"eksponente, algebraiese manipulasie, lineere vergelykings, Pythagoras, oppervlakarea/volume"},
+  9:{f:"Senior fase",t:"sistematies en analities",k:"eksponente (reels), faktorisasie (alle metodes), funksies en grafieke, Pythagoras, statistiek"},
+  10:{f:"FET",t:"wiskundig presies",k:"funksies (parabool/hiperbool/eksponensiaal), driehoeksmeting, Euklidiese meetkunde bewyse, finansiele wiskunde"},
+  11:{f:"FET",t:"rigorous en konseptueel",k:"funksies en transformasies, trigonometrie identiteite, sirkelmeetkunde bewyse, finansies"},
+  12:{f:"FET Matriek",t:"professioneel, matrikulasie-standaard",k:"rye en reekse, kalkulus, driehoeksmeting, finansiele wiskunde, statistiek"}
+};
+var HULPDATA=[
+  {icon:"&#9998;",title:"Algebra",items:[
+    {lb:"Distributiewe wet",fm:"a(b+c)=ab+ac"},
+    {lb:"Kwadraat van tweelid",fm:"(a+b)\u00b2=a\u00b2+2ab+b\u00b2"},
+    {lb:"Verskil van kwadrate",fm:"a\u00b2-b\u00b2=(a+b)(a-b)"},
+    {lb:"Lineere vergelyking",fm:"ax+b=0 \u2192 x=-b/a"},
+    {lb:"Kwadratiese formule",fm:"x=(-b\u00b1\u221a(b\u00b2-4ac))/2a"}
+  ]},
+  {icon:"&#128978;",title:"Meetkunde",items:[
+    {lb:"Driehoeke",fm:"\u25b3 hoeke = 180\u00b0"},
+    {lb:"Pythagoras",fm:"a\u00b2+b\u00b2=c\u00b2"},
+    {lb:"Omtrek sirkel",fm:"O=2\u03c0r"},
+    {lb:"Oppervlakte sirkel",fm:"A=\u03c0r\u00b2"},
+    {lb:"Supplementere hoeke",fm:"hoeke op lyn = 180\u00b0"}
+  ]},
+  {icon:"&#128202;",title:"Oppervlakte en Volume",items:[
+    {lb:"Reghoek A",fm:"A=l\u00d7b"},
+    {lb:"Driehoek A",fm:"A=\u00bd\u00d7b\u00d7h"},
+    {lb:"Prisma V",fm:"V=l\u00d7b\u00d7h"},
+    {lb:"Silinder V",fm:"V=\u03c0r\u00b2h"},
+    {lb:"Silinder A",fm:"A=2\u03c0r\u00b2+2\u03c0rh"}
+  ]},
+  {icon:"&#128200;",title:"Grafieke",items:[
+    {lb:"Reguitlyn",fm:"y=mx+c"},
+    {lb:"Helling",fm:"m=(y\u2082-y\u2081)/(x\u2082-x\u2081)"},
+    {lb:"Parabool",fm:"y=ax\u00b2+bx+c"},
+    {lb:"Draaipunt",fm:"x=-b/(2a)"},
+    {lb:"Hiperbool",fm:"y=k/x"}
+  ]},
+  {icon:"&#127922;",title:"Kans en Data",items:[
+    {lb:"Waarskynlikheid",fm:"P(A)=gunstig/totaal"},
+    {lb:"Gemiddelde",fm:"Som\u00f7n"},
+    {lb:"Mediaan",fm:"Middelste waarde"},
+    {lb:"Modus",fm:"Mees voorkomend"},
+    {lb:"Bereik",fm:"Hoogste-Laagste"}
+  ]},
+  {icon:"&#128178;",title:"Finansies",items:[
+    {lb:"Eenvoudige rente",fm:"A=P(1+in)"},
+    {lb:"Saamgestelde rente",fm:"A=P(1+i)\u207f"},
+    {lb:"BTW (15%)",fm:"Prys\u00d71.15"},
+    {lb:"Wins %",fm:"(Wins/Kos)\u00d7100"},
+    {lb:"Korting",fm:"Prys\u00d7(1-%/100)"}
+  ]},
+  {icon:"&#128250;",title:"Trigonometrie (Gr 10+)",items:[
+    {lb:"sin\u03b8",fm:"Teenoor/Skuins"},
+    {lb:"cos\u03b8",fm:"Aanlig/Skuins"},
+    {lb:"tan\u03b8",fm:"Teenoor/Aanlig"},
+    {lb:"sin-reel",fm:"a/sinA=b/sinB"},
+    {lb:"cos-reel",fm:"a\u00b2=b\u00b2+c\u00b2-2bc\u00b7cosA"}
+  ]},
+  {icon:"&#128200;",title:"Eksponente",items:[
+    {lb:"Produk",fm:"a\u1d50\u00d7a\u207f=a\u1d50\u207a\u207f"},
+    {lb:"Kwosiënt",fm:"a\u1d50\u00f7a\u207f=a\u1d50\u207b\u207f"},
+    {lb:"Mag van mag",fm:"(a\u1d50)\u207f=a\u1d50\u207f"},
+    {lb:"Negatief",fm:"a\u207b\u207f=1/a\u207f"},
+    {lb:"Nul",fm:"a\u2070=1"}
+  ]}
+];
+
+function getSys(g,m,naam){
+  var gi=GI[g]||GI[9];
+  var mi={
+    tutor:"TUTOR MODUS: Sokratiese metode. NOOIT dadelik antwoord nie. Begin met leidende vraag. Prys elke poging. Eindig met opvolg-vraag.",
+    toets:"TOETS MODUS: 5 vrae een vir een. Wag vir elke antwoord. Onmiddellike terugvoer. Lopende punt bv 2/5. Opsomming aan die einde.",
+    uitdaging:"UITDAGING MODUS: Olimpiese-styl meerstap probleme. Geen leidrade tot leerder probeer."
+  };
+  return "Jy is Wiskunde Buddy, Wiskunde-tutor van Ooskus Gimnasium, SA.\n"+
+    "Jy praat met "+naam+", Graad "+g+" leerder ("+gi.f+").\n"+
+    "TAAL: ALTYD Afrikaans. Spreek by naam. Taalvlak: "+gi.t+"\n"+
+    (mi[m]||mi.tutor)+"\n"+
+    "BEGINSELS: Bou begrip. Werklike kontekste. Foute=leergeleenthede.\n"+
+    "CAPS GRAAD "+g+": "+gi.k+"\n"+
+    "FORMAAT: Maks 130 woorde. Wiskundige simbole. Nummereer stappe. Opvolg-vraag (nie in toets).";
+}
+
+/* ── STATE ── */
+var hist=[],mode="tutor",grade=9,xp=0,streak=0,learnerName="";
+var recognition=null,isRec=false,curAudio=null,lastPaper="";
+
+/* ── AFRIKAANS TTS - IMPROVED ──
+   Strategy: Use Google Translate TTS which has a proper Afrikaans voice,
+   but set rate to 1.15 (slightly faster than default) for natural feel.
+   We split long text into sentences and queue them for smoother playback.
+   Afrikaans-specific text cleaning removes math symbols that sound wrong.
+*/
+var ttsQueue=[],ttsPlaying=false;
+
+function cleanForSpeech(txt){
+  return txt
+    .replace(/<[^>]+>/g,"")
+    .replace(/\*\*/g,"")
+    .replace(/`([^`]+)`/g,"$1")
+    .replace(/&amp;/g,"en")
+    .replace(/&lt;/g,"")
+    .replace(/&gt;/g,"")
+    // Math symbols to spoken Afrikaans
+    .replace(/\u00b2/g," kwadraat")
+    .replace(/\u00b3/g," tot die mag drie")
+    .replace(/\u221a/g,"wortel van ")
+    .replace(/\u03c0/g,"pi")
+    .replace(/\u00f7/g," gedeel deur ")
+    .replace(/\u00d7/g," maal ")
+    .replace(/\u2260/g," is nie gelyk aan ")
+    .replace(/\u2264/g," is kleiner as of gelyk aan ")
+    .replace(/\u2265/g," is groter as of gelyk aan ")
+    .replace(/\u00b1/g," plus of minus ")
+    .replace(/\u2192/g," dus ")
+    .replace(/\u221e/g," oneindig")
+    .replace(/\u03b8/g," theta")
+    .replace(/\u2220/g," hoek ")
+    .replace(/\u00b0/g," grade")
+    .replace(/\u03a3/g," som van ")
+    // Clean up extra spaces
+    .replace(/\s{2,}/g," ")
+    .trim();
+}
+
+function splitIntoChunks(txt, maxLen){
+  // Split on sentence boundaries for natural speech
+  var sentences = txt.split(/(?<=[.!?])\s+/);
+  var chunks = [];
+  var current = "";
+  sentences.forEach(function(s){
+    if((current+s).length > maxLen){
+      if(current) chunks.push(current.trim());
+      current = s;
+    } else {
+      current += (current?" ":"")+s;
+    }
+  });
+  if(current) chunks.push(current.trim());
+  return chunks.filter(function(c){return c.length>0;});
+}
+
+function playNextChunk(){
+  if(ttsQueue.length===0){ttsPlaying=false;return;}
+  ttsPlaying=true;
+  var chunk=ttsQueue.shift();
+  // Google Translate TTS with Afrikaans - rate param not supported directly
+  // so we use the Web Audio API to speed it up slightly
+  var url="https://translate.google.com/translate_tts?ie=UTF-8&tl=af&client=tw-ob&q="+encodeURIComponent(chunk);
+  var audio=new Audio(url);
+  audio.playbackRate=1.2; // 20% faster - natural Afrikaans speech pace
+  curAudio=audio;
+  audio.onended=function(){curAudio=null;playNextChunk();};
+  audio.onerror=function(){
+    // Fallback to browser TTS for this chunk
+    browserTTS(chunk,function(){playNextChunk();});
+  };
+  audio.play().catch(function(){
+    browserTTS(chunk,function(){playNextChunk();});
+  });
+}
+
+function speak(txt){
+  // Stop anything playing
+  stopSpeech();
+  var clean=cleanForSpeech(txt);
+  if(!clean)return;
+  // Split into manageable chunks (Google TTS limit ~200 chars)
+  ttsQueue=splitIntoChunks(clean,180);
+  playNextChunk();
+}
+
+function stopSpeech(){
+  ttsQueue=[];
+  ttsPlaying=false;
+  if(curAudio){curAudio.pause();curAudio.src="";curAudio=null;}
+  if(window.speechSynthesis)window.speechSynthesis.cancel();
+}
+
+function browserTTS(txt,onDone){
+  var s=window.speechSynthesis;if(!s){if(onDone)onDone();return;}
+  s.cancel();
+  var u=new SpeechSynthesisUtterance(txt);
+  var vs=s.getVoices();
+  var v=vs.find(function(x){return x.lang.startsWith("af");})||
+         vs.find(function(x){return x.lang.startsWith("en-ZA");})||null;
+  if(v)u.voice=v;
+  u.lang="af-ZA";
+  u.rate=1.15;  // Slightly faster than default 1.0
+  u.pitch=1.05;
+  u.onend=u.onerror=function(){if(onDone)onDone();};
+  s.speak(u);
+}
+
+function mkSpkBtn(txt){
+  var b=document.createElement("button");b.className="spk-btn";b.innerHTML="&#128266; Lees voor";
+  b.addEventListener("click",function(){
+    if(b.classList.contains("on")){
+      stopSpeech();
+      document.querySelectorAll(".spk-btn.on").forEach(function(x){x.classList.remove("on");x.innerHTML="&#128266; Lees voor";});
+      return;
+    }
+    document.querySelectorAll(".spk-btn.on").forEach(function(x){x.classList.remove("on");x.innerHTML="&#128266; Lees voor";});
+    b.classList.add("on");b.innerHTML="&#9646;&#9646; Stop";
+    speak(txt);
+    // Poll to detect when done
+    var poll=setInterval(function(){
+      if(!ttsPlaying&&ttsQueue.length===0){
+        clearInterval(poll);
+        b.classList.remove("on");b.innerHTML="&#128266; Lees voor";
+      }
+    },500);
+  });
+  return b;
+}
+
+/* ── VOICE INPUT ── */
+function toggleVoice(){
+  if(!("webkitSpeechRecognition" in window||"SpeechRecognition" in window)){
+    alert("Stemherkenning werk slegs in Google Chrome.");return;
+  }
+  isRec?stopVoice():startVoice();
+}
+function startVoice(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition=new SR();recognition.lang="af-ZA";recognition.interimResults=false;recognition.maxAlternatives=1;
+  recognition.onresult=function(e){document.getElementById("ui").value=e.results[0][0].transcript;stopVoice();setTimeout(doSend,200);};
+  recognition.onerror=recognition.onend=stopVoice;
+  recognition.start();isRec=true;
+  document.getElementById("vBtn").classList.add("rec");document.getElementById("vBtn").innerHTML="&#9646;&#9646;";
+  document.getElementById("vStatus").classList.add("on");
+}
+function stopVoice(){
+  try{if(recognition)recognition.stop();}catch(e){}
+  isRec=false;
+  document.getElementById("vBtn").classList.remove("rec");document.getElementById("vBtn").innerHTML="&#127908;";
+  document.getElementById("vStatus").classList.remove("on");
+}
+
+/* ── CHAT UI ── */
+function esc(t){return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function fmt(t){
+  var h=esc(t);
+  h=h.replace(/\n/g,"<br>");
+  h=h.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>");
+  h=h.replace(/`([^`]+)`/g,"<span class='hl'>$1</span>");
+  return h;
+}
+function ar(el){el.style.height="auto";el.style.height=Math.min(el.scrollHeight,100)+"px";}
+
+function addBot(txt){
+  var c=document.getElementById("chat");
+  var d=document.createElement("div");d.className="msg bot";
+  var av=document.createElement("div");av.className="av bot";av.innerHTML="&#129518;";
+  var bbl=document.createElement("div");bbl.className="bbl";
+  bbl.innerHTML=fmt(txt);bbl.appendChild(document.createElement("br"));bbl.appendChild(mkSpkBtn(txt));
+  d.appendChild(av);d.appendChild(bbl);c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+function addUser(txt){
+  var c=document.getElementById("chat");
+  var d=document.createElement("div");d.className="msg user";
+  var av=document.createElement("div");av.className="av usr";av.innerHTML="&#127891;";
+  var bbl=document.createElement("div");bbl.className="bbl";bbl.textContent=txt;
+  d.appendChild(av);d.appendChild(bbl);c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+function showTyping(){
+  var c=document.getElementById("chat");
+  var d=document.createElement("div");d.className="msg bot";d.id="typ";
+  var av=document.createElement("div");av.className="av bot";av.innerHTML="&#129518;";
+  var bbl=document.createElement("div");bbl.className="bbl";
+  bbl.innerHTML="<div class='dots'><span></span><span></span><span></span></div>";
+  d.appendChild(av);d.appendChild(bbl);c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+function rmTyping(){var t=document.getElementById("typ");if(t)t.remove();}
+
+function buildTopics(){
+  var bar=document.getElementById("topicBar");bar.innerHTML="";
+  (TOPICS[grade]||TOPICS[9]).forEach(function(t){
+    var ch=document.createElement("button");ch.className="tchip";ch.textContent=t;
+    ch.addEventListener("click",function(){quickSend("Help my met "+t);});bar.appendChild(ch);
+  });
+}
+function buildQP(){
+  var a=document.getElementById("qpArea");a.innerHTML="";
+  QPS[mode].forEach(function(q){
+    var b=document.createElement("button");b.className="qp";b.textContent=q;
+    b.addEventListener("click",function(){quickSend(q);});a.appendChild(b);
+  });
+  var tops=TOPICS[grade]||TOPICS[9];
+  var rnd=tops[Math.floor(Math.random()*tops.length)];
+  var ex=document.createElement("button");ex.className="qp";ex.textContent="Toets oor "+rnd;
+  ex.addEventListener("click",function(){quickSend("Toets my oor "+rnd);});a.appendChild(ex);
+}
+function quickSend(t){document.getElementById("ui").value=t;doSend();}
+
+function setMode(m){
+  mode=m;
+  var clsMap={tutor:"mt",toets:"mk",uit:"mu"};
+  ["tutor","toets","uit"].forEach(function(x){
+    var b=document.getElementById("btn-"+x);
+    b.className="mode-btn "+clsMap[x]+(m===x?" on":"");
+  });
+  buildQP();
+  var msgs={
+    tutor:"Tutor Modus is aan, "+learnerName+"! Stap-vir-stap \u2014 geen antwoorde sommer weggegee nie. Kies \u2019n onderwerp!",
+    toets:"Toets Modus is aan! Kies \u2019n onderwerp vir 5 vrae met puntetelling. Watter onderwerp?",
+    uitdaging:"Uitdaging Modus \u2014 Olimpiese Ronde, "+learnerName+"! Geen leidrade tot jy eers probeer!"
+  };
+  addBot(msgs[m]||msgs.tutor);
+}
+
+function updateXP(){
+  xp=Math.min(100,xp+10);streak++;
+  document.getElementById("xpBar").style.width=xp+"%";
+  var i=xp<20?0:xp<40?1:xp<60?2:xp<80?3:4;
+  document.getElementById("lvlTxt").textContent=["Ster 1","Ster 2","Goud","Kampioen","Meester!"][i];
+  document.getElementById("stkTxt").textContent=streak>=3?streak+" op ry!":"";
+}
+
+/* ── ROBUST GEMINI API CALLER (via secure server proxy) ── */
+async function callGemini(sysTxt,messages,maxTok,attempt){
+  attempt=attempt||1;
+  // Calls our Vercel serverless function — API key is NEVER in the browser
+  var url="/api/gemini";
+  var body={
+    systemInstruction:sysTxt,
+    contents:messages,
+    maxOutputTokens:maxTok||700,
+    temperature:0.72
+  };
+  var resp,data;
+  try{
+    resp=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    data=await resp.json();
+  }catch(netErr){
+    return{ok:false,text:"Verbindingsprobleem. Maak seker jy is aanlyn.",network:true};
+  }
+  if(data.candidates&&data.candidates[0]){
+    return{ok:true,text:data.candidates[0].content.parts[0].text,status:resp.status};
+  }
+  var errMsg=(data.error&&data.error.message)||"Onbekende fout";
+  var status=resp.status;
+  // Rate limit - retry with backoff
+  if(status===429&&attempt<=3){
+    var waitSec=attempt*5;
+    showRetryNote("\u23f3 Wag "+waitSec+"s en probeer weer (poging "+attempt+"/3)...");
+    await sleep(waitSec*1000);
+    hideRetryNote();
+    return callGemini(sysTxt,messages,maxTok,attempt+1);
+  }
+  // Auth / server config error
+  if(status===403||status===500){
+    return{ok:false,status:status,
+      text:"Bediener-konfigurasie fout ("+status+"). Kontak die administrateur."};
+  }
+  if(status===429){
+    return{ok:false,status:429,text:"Daaglikse limiet bereik. Probeer more weer \u2014 dit stel middernag terug."};
+  }
+  return{ok:false,status:status,text:"Fout ("+status+"): "+errMsg};
+}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
+function showRetryNote(m){var n=document.getElementById("retryNote");n.textContent=m;n.classList.add("on");}
+function hideRetryNote(){document.getElementById("retryNote").classList.remove("on");}
+
+async function doSend(){
+  var el=document.getElementById("ui"),snd=document.getElementById("sendBtn");
+  var txt=el.value.trim();if(!txt||snd.disabled)return;
+  el.value="";el.style.height="auto";
+  document.getElementById("spellBar").innerHTML="";
+  addUser(txt);snd.disabled=true;
+  document.getElementById("qpArea").innerHTML="";
+  showTyping();
+  hist.push({role:"user",parts:[{text:txt}]});
+  var res=await callGemini(getSys(grade,mode,learnerName),hist,700);
+  rmTyping();
+  if(res.ok){
+    hist.push({role:"model",parts:[{text:res.text}]});
+    addBot(res.text);updateXP();
+  }else{
+    addBot("\u26a0\ufe0f "+res.text);
+  }
+  snd.disabled=false;buildQP();document.getElementById("ui").focus();
+}
+
+/* ── HULPBRONNE ── */
+function buildHulp(){
+  var grid=document.getElementById("hulpGrid");grid.innerHTML="";
+  HULPDATA.forEach(function(sec){
+    var card=document.createElement("div");card.className="hcard";
+    var h3=document.createElement("h3");h3.innerHTML=sec.icon+" "+sec.title;card.appendChild(h3);
+    var ul=document.createElement("ul");
+    sec.items.forEach(function(item){
+      var li=document.createElement("li");
+      li.innerHTML="<span class='lb'>"+item.lb+"</span><span class='fm'>"+item.fm+"</span>";
+      ul.appendChild(li);
+    });
+    card.appendChild(ul);grid.appendChild(card);
+  });
+}
+
+/* ── VRAESTEL ── */
+function buildVrTopics(){
+  var g=parseInt(document.getElementById("vrGrade").value)||9;
+  var tops=WIZE_TOPICS[String(g)]||TOPICS[g]||TOPICS[9];
+  var grid=document.getElementById("vrTopics");grid.innerHTML="";
+  tops.forEach(function(t){
+    var item=document.createElement("div");item.className="vchk";
+    var cb=document.createElement("input");cb.type="checkbox";
+    cb.id="vrc_"+t.replace(/\s/g,"_");cb.value=t;cb.checked=true;
+    var lbl=document.createElement("label");lbl.htmlFor=cb.id;lbl.textContent=t;
+    item.appendChild(cb);item.appendChild(lbl);grid.appendChild(item);
+  });
+}
+
+async function genVraestel(withMemo){
+  var g=parseInt(document.getElementById("vrGrade").value)||9;
+  var tipe=document.getElementById("vrTipe").value;
+  var moeil=document.getElementById("vrMoeil").value;
+  var tops=[];
+  document.querySelectorAll("#vrTopics input:checked").forEach(function(cb){tops.push(cb.value);});
+  if(tops.length===0){alert("Kies ten minste een onderwerp.");return;}
+  var nVrae={oefening:10,kort:15,formeel:20,vraestel:30}[tipe]||15;
+  var tipeNaam={oefening:"Oefentoets",kort:"Kort Toets",formeel:"Formele Toets",vraestel:"Vraestel"}[tipe]||tipe;
+  var sys="Jy is n CAPS Wiskunde-eksamineerder vir Graad "+g+" by Ooskus Gimnasium, SA. "+
+    "Stel vrae op in Afrikaans in Wize Books-styl: genommerde vrae, deelvrae (a)(b)(c), "+
+    "progressiewe moeilikheid, punte in blokhakies [2], afdeling-opskrifte per onderwerp. "+
+    (withMemo?"Gee SLEGS antwoorde (memorandum) met punte-aanwysings.":"Geen antwoorde nie.");
+  var prompt=withMemo
+    ?"Skryf n memorandum vir:\n\n"+lastPaper
+    :"Genereer n "+tipeNaam+", Graad "+g+", Onderwerpe: "+tops.join(", ")+
+     ", Moeilikheid: "+moeil+", Aantal vrae: "+nVrae+". Sluit totale punte in.";
+  document.getElementById("vrGenBtn").disabled=true;
+  document.getElementById("vrMemoBtn").disabled=true;
+  document.getElementById("vrSpinner").classList.add("on");
+  document.getElementById("vrOutput").classList.remove("vis");
+  document.getElementById("vrActions").classList.remove("vis");
+  var res=await callGemini(sys,[{role:"user",parts:[{text:prompt}]}],2000);
+  document.getElementById("vrSpinner").classList.remove("on");
+  var out=document.getElementById("vrOutput");
+  if(res.ok){
+    if(!withMemo){lastPaper=res.text;document.getElementById("vrMemoBtn").style.display="";}
+    out.textContent=res.text;out.classList.add("vis");
+    document.getElementById("vrActions").classList.add("vis");
+  }else{
+    out.textContent="\u26a0\ufe0f "+res.text;out.classList.add("vis");
+  }
+  document.getElementById("vrGenBtn").disabled=false;
+  document.getElementById("vrMemoBtn").disabled=false;
+}
+
+/* ── NAV ── */
+function showTab(tab){
+  ["tutor","hulp","vraestel"].forEach(function(t){
+    var pg=document.getElementById(t==="vraestel"?"vraestelPage":t+"Page");
+    pg.style.display=tab===t?"flex":"none";
+    document.getElementById("tab-"+(t==="vraestel"?"vr":t)).classList.toggle("active",tab===t);
+  });
+}
+
+/* ── START ── */
+function startApp(){
+  document.getElementById("nameScreen").style.display="none";
+  document.getElementById("appScreen").style.display="flex";
+  document.getElementById("nameBadge").textContent=learnerName;
+  document.getElementById("gradeBadge").textContent="Gr "+grade;
+  document.getElementById("hdrSub").textContent="Graad "+grade+" Wiskunde";
+  buildTopics();buildQP();buildHulp();buildVrTopics();showTab("tutor");
+  var grts=["Haai","Hallo","Hey","Jislaaik, welkom"];
+  setTimeout(function(){
+    addBot(grts[Math.floor(Math.random()*grts.length)]+" "+learnerName+
+      "! Welkom by Wiskunde Buddy van Ooskus Gimnasium.\n\nEk help jou VERSTAAN \u2014 nie net antwoorde gee nie. Jy gaan dit regkry!\n\nKies \u2019n onderwerp, gebruik die simboolbalk, of vra my net \u2019n vraag. Druk \ud83d\udd0a om my te hoor!");
+  },300);
+}
+
+function tryStart(){
+  var naam=document.getElementById("nameInp").value.trim();
+  if(!naam){document.getElementById("nsErr").style.display="block";return;}
+  document.getElementById("nsErr").style.display="none";
+  learnerName=naam;grade=parseInt(document.getElementById("nsGrade").value)||9;startApp();
+}
+
+/* ── EVENTS ── */
+document.getElementById("startBtn").addEventListener("click",tryStart);
+document.getElementById("nameInp").addEventListener("keydown",function(e){if(e.key==="Enter")tryStart();});
+document.getElementById("btn-tutor").addEventListener("click",function(){setMode("tutor");});
+document.getElementById("btn-toets").addEventListener("click",function(){setMode("toets");});
+document.getElementById("btn-uit").addEventListener("click",function(){setMode("uitdaging");});
+document.getElementById("vBtn").addEventListener("click",toggleVoice);
+document.getElementById("sendBtn").addEventListener("click",doSend);
+document.getElementById("ui").addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();doSend();}});
+document.getElementById("ui").addEventListener("input",function(){ar(this);spellCheck();});
+document.getElementById("tab-tutor").addEventListener("click",function(){showTab("tutor");});
+document.getElementById("tab-hulp").addEventListener("click",function(){showTab("hulp");});
+document.getElementById("tab-vr").addEventListener("click",function(){showTab("vraestel");});
+document.getElementById("vrGrade").addEventListener("change",buildVrTopics);
+document.getElementById("vrGenBtn").addEventListener("click",function(){genVraestel(false);});
+document.getElementById("vrMemoBtn").addEventListener("click",function(){genVraestel(true);});
+document.getElementById("vrMemoBtn2").addEventListener("click",function(){genVraestel(true);});
+document.getElementById("vrCopyBtn").addEventListener("click",function(){
+  navigator.clipboard.writeText(document.getElementById("vrOutput").textContent)
+    .then(function(){
+      document.getElementById("vrCopyBtn").textContent="\u2713 Gekopieer!";
+      setTimeout(function(){document.getElementById("vrCopyBtn").innerHTML="&#128203; Kopieer";},2000);
+    });
+});
+
+})();
+</script>
+</body>
+</html>
